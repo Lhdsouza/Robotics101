@@ -46,7 +46,7 @@ bool Robot::initializeAria()
 
 
     //parser->addDefaultArgument("-rh 192.168.1.11 -remoteLaserTcpPort 10002");
-    // parser.addDefaultArgument("-rh 127.0.0.1:8101");
+    parser.addDefaultArgument("-rh 127.0.0.1:8101");
 
     this->addRangeDevice(&sick);
     if(!robotConnector->connectRobot())

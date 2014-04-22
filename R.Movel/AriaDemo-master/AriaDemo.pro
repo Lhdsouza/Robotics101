@@ -16,17 +16,20 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     robot.cpp \
     aboutdialog.cpp \
-    tabuleiro.cpp
+    tabuleiro.cpp \
+    scenario.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
     aboutdialog.h \
-    tabuleiro.h
+    tabuleiro.h \
+    scenario.h
 
 FORMS    += mainwindow.ui \
     aboutdialog.ui \
     ../tabuleiro.ui \
-    tabuleiro.ui
+    tabuleiro.ui \
+    scenario.ui
 
 INCLUDEPATH += /usr/local/Aria/include
 

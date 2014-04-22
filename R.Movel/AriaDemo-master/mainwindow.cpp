@@ -9,16 +9,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
+    environment = new scenario(0,51);
+
     //Just to simulate the command line input
     int argc = 0;
     char *argv;
-    mRobot = new Robot(&argc,&argv,&this->board);
+    mRobot = new Robot(&argc,&argv,this->environment);
     connect(this,SIGNAL(moving(int)),mRobot,SLOT(move(int)));
 
     mTimer.setInterval(500);
 
     this->connectActions();
-
 }
 
 MainWindow::~MainWindow()
@@ -32,7 +34,7 @@ void MainWindow::startStopRobot()
 
     if(ui->PBStart->isChecked())
     {
-        this->board.show();
+        this->environment->show();
         ui->PBStart->setText(QString("Stop robot"));
         mRobot->start();
         mTimer.start();
@@ -40,7 +42,7 @@ void MainWindow::startStopRobot()
     }
     else
     {
-        this->board.close();
+        this->environment->close();
         mRobot->shutdown();
         mTimer.stop();
         ui->PBStart->setText(QString("Start robot"));

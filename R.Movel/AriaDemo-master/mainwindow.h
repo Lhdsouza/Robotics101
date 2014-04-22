@@ -6,6 +6,7 @@
 #include <robot.h>
 #include <QTimer>
 #include "tabuleiro.h"
+#include "scenario.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,6 +41,7 @@ private:
     Robot *mRobot;
     QTimer mTimer;
     tabuleiro board;
+    scenario *environment;
 };
 
 #endif // MAINWINDOW_H

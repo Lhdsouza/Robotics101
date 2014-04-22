@@ -8,16 +8,19 @@
 #include <QTimer>
 #include <list>
 #include <cstddef>
-#include<tabuleiro.h>
+#include <tabuleiro.h>
+#include "scenario.h"
 
 using namespace std;
+
+class scenario;
 
 class Robot: public QObject, public ArRobot
 {
     Q_OBJECT
 
 public:
-    Robot(int *argc, char **argv, tabuleiro *board);
+    Robot(int *argc, char **argv, scenario *scene);
     ~Robot();
     void rotate(int degrees);
     int getLaserRange(int angle);
@@ -29,23 +32,12 @@ public:
     void exploration();
     void imStop();
     void rotateTo(int sonarFiles[]);
-    void WorldMap(int sonarFiles[]);
     void PrintMap();
     double OldPx;
     double OldPy;
-    tabuleiro *board;
     int sonars[8];
 
-
-    /*
-    tabuleiro t;
-    t.GenerateButtons();
-    t.show();
-
-    t.colorBlock(100100);
-    t.colorBlock(100101);
-      */
-
+    scenario *scene;
 
     list<double>mapX;
     list<double>mapY;

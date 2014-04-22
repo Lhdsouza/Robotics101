@@ -10,11 +10,11 @@ using::std::endl;
 
 
 
-Robot::Robot(int *argc, char **argv, tabuleiro *board):
+Robot::Robot(int *argc, char **argv, scenario *scene):
     QObject(),
     ArRobot(),
     parser(argc,argv),
-    board(board)
+    scene(scene)
 {
     robotConnector = new ArRobotConnector(&parser,this);
     laserConnector = new ArLaserConnector(&parser,this,robotConnector);
@@ -99,9 +99,9 @@ bool Robot::initializeAria()
 
     int contloc =0;
 
-    // Vai dar merda
-//    connect(this,SIGNAL(updateDesenho(int[],double,double,double)),this->board,SLOT(updateDesenho(int[],double,double,double)));
-    connect(this,SIGNAL(updateDesenho(Robot*)),this->board,SLOT(updateDesenho(Robot*)));
+
+    connect(this,SIGNAL(updateDesenho(Robot*)),this->scene,SLOT(updateDesenho(Robot*)));
+
 
     //board.show();
     while (true) {
@@ -296,195 +296,6 @@ void Robot::rotateTo(int sonarFiles[]){
        ArUtil::sleep(300);
     }
 
-}
-
-void Robot::WorldMap(int sonarFiles[]){
-
-
-    int n = (500);
-    int theta = this->getNorth(); //ArRobot::getOdometerDegrees();
-    int xSonar[8];
-    int ySonar[8];
-
-
-
-    cout << "Th: " << theta << endl;
-
-    int meXGlobal = 15 + (ArRobot::getX() /n); //Coordenadas de tabuleiro!
-    int meYGlobal = 15 + (ArRobot::getY() /n);
-
-    int vaidarmerda = (meYGlobal+100)*1000+(meXGlobal+100);
-
-    for (int i = 0; i < 8; i++) {
-        xSonar[i]=0;
-        ySonar[i]=0;
-    }
-
-    for (int i = 0; i < 8; i++) {
-        ArUtil::sleep(100);
-
-
-        int angulo = theta;
-
-        // cout << "Angulo: " << angulo << endl;
-
-
-        //cout << vaidarmerda << "... Deu merda ?"<< endl;
-
-        if(meXGlobal < 31 && meYGlobal < 31){
-            board->colorBlock(vaidarmerda,0);
-        } else {
-            cout << "OUT " << endl;
-        }
-
-        //        int pos = (meXGlobal*1000+meYGlobal+100);
-        //this->board.colorBlock(pos);
-
-        //t.colorBlock(pos);
-        //        this->MapR[meXGlobal][meYGlobal]=13;
-
-        if(i==0){angulo = 90;}
-        if(i==1){angulo = 50;}
-        if(i==2){angulo = 30;}
-        if(i==3){angulo = 10;}
-        if(i==4){angulo = -10;}
-        if(i==5){angulo = -30;}
-        if(i==6){angulo = -50;}
-        if(i==7){angulo = -90;}
-        cout << "Angulo: " << angulo <<"\t Range: " << sonarFiles[i]  << endl;
-        if( sonarFiles[i] < 5000){
-
-//            ArUtil::sleep(300);
-            //cout<<"Sonar: "<<i<<" Identificou um objeto à :"<<sonarFiles[i]<<endl;
-            // H² = A² + B²
-            double Hp =  sonarFiles[i]; //H
-            double Co = sin((M_PI*(angulo+theta))/180.0)*Hp; // A - representa a variacao em Y
-            double Ca = cos((M_PI*(angulo+theta))/180.0)*Hp; //B - representa a variacao em X
-
-            int Xn = meXGlobal + Ca/n ;
-            int Yn = meYGlobal - Co/n;
-
-            /*P.Global = P.Centro  + Odometria + Posicao do Objeto*/
-
-
-            // int XGlobal = meXGlobal + ( Xn)/n;
-            //int YGlobal = meYGlobal + ( Yn)/n;
-
-
-            /*int XGlobal = meXGlobal ;
-            int YGlobal = meYGlobal ;
-
-
-            if( theta>= 0 &&  theta < 90){
-                XGlobal += ( Xn)/n;
-                YGlobal += ( Yn)/n;
-            }else if ( theta>= 90 &&  theta< 180){
-                XGlobal += ( Xn)/n;
-                YGlobal -= ( Yn)/n;
-            }else if ( theta >= 180 &&  theta < 270){
-                XGlobal -= ( Xn)/n;
-                YGlobal -= ( Yn)/n;
-            }else if (theta >=270 && theta <= 360) {
-                XGlobal -= ( Xn)/n;
-                YGlobal += ( Yn)/n;
-            }
-
-            */
-
-            xSonar[i] =Xn;
-            ySonar[i] =Yn;
-
-
-
-            int Blc = (Xn+100)*1000+(Yn+100);
-            // cout << "x " << XGlobal << "y " << YGlobal  << " Th:" << ArRobot::getOdometerDegrees() << endl;
-
-            if(Xn < 31 && Yn < 31){
-                board->colorBlock(Blc,1);
-            } else {
-                cout << "OUT " << endl;
-            }
-
-            //this->MapR[XGlobal][YGlobal]=i;
-        }
-    }
-
-
-    for(int i=0, j=1;j<8;j++,i++){
-
-
-        //        if((xSonar[i]!=0 || ySonar[i]!=0) && (xSonar[j]!=0 || ySonar[j]!=0)){
-
-        //            if(xSonar[i] > xSonar[j] && ySonar[i] > ySonar[j]){
-
-        //                for(int nx =xSonar[j]  ; nx <xSonar[i] ; nx++ ){
-        //                    for(int ny = ySonar[j]; ny <  ySonar[i]  ; ny++){
-        //                        int lc = (ny+100)*1000+(nx+100);
-        //                        if(nx < 31 && ny < 31){
-        //                            board->colorBlock(lc,1);
-        //                        } else {
-        //                            cout << "OUT " << endl;
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-        //            if(xSonar[i] > xSonar[j] && ySonar[i] < ySonar[j]){
-        //                for(int nx =xSonar[j]  ; nx <xSonar[i] ; nx++ ){
-        //                    for(int ny = ySonar[i]; ny <  ySonar[j]  ; ny++){
-        //                        int lc = (ny+100)*1000+(nx+100);
-        //                        if(nx < 31 && ny < 31){
-        //                            board->colorBlock(lc,1);
-        //                        } else {
-        //                            cout << "OUT " << endl;
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-        //            if(xSonar[i] < xSonar[j] && ySonar[i] > ySonar[j]){
-        //                for(int nx =xSonar[i]  ; nx <xSonar[j] ; nx++ ){
-        //                    for(int ny = ySonar[j]; ny <  ySonar[i]  ; ny++){
-        //                        int lc = (ny+100)*1000+(nx+100);
-        //                        if(nx < 31 && ny < 31){
-        //                            board->colorBlock(lc,1);
-        //                        } else {
-        //                            cout << "OUT " << endl;
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-        //            if(xSonar[i] < xSonar[j] && ySonar[i] < ySonar[j]){
-        //                for(int nx =xSonar[i]  ; nx <xSonar[j] ; nx++ ){
-        //                    for(int ny = ySonar[i]; ny <  ySonar[j]  ; ny++){
-        //                        int lc = (ny+100)*1000+(nx+100);
-        //                        if(nx < 31 && ny < 31){
-        //                            board->colorBlock(lc,1);
-        //                        } else {
-        //                            cout << "OUT " << endl;
-        //                        }
-        //                    }
-        //                }
-
-
-        //            }
-
-        //        }
-
-        int Blc = (xSonar[i]+100)*1000+(ySonar[i]+100);
-        // cout << "x " << XGlobal << "y " << YGlobal  << " Th:" << ArRobot::getOdometerDegrees() << endl;
-
-        if(xSonar[i] < 31 && ySonar[i] < 31){
-            board->colorBlock(Blc,1);
-        } else {
-            cout << "OUT " << endl;
-        }
-
-
-
-
-    }
 }
 
 

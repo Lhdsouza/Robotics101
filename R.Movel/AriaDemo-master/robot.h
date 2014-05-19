@@ -8,19 +8,18 @@
 #include <QTimer>
 #include <list>
 #include <cstddef>
-#include <tabuleiro.h>
 #include "scenario.h"
 
 using namespace std;
 
-class scenario;
+class Scenario;
 
 class Robot: public QObject, public ArRobot
 {
     Q_OBJECT
 
 public:
-    Robot(int *argc, char **argv, scenario *scene);
+    Robot(int *argc, char **argv, Scenario *scene);
     ~Robot();
     void rotate(int degrees);
     int getLaserRange(int angle);
@@ -36,8 +35,9 @@ public:
     double OldPx;
     double OldPy;
     int sonars[8];
+    vector<ArSensorReading> *lasers;
 
-    scenario *scene;
+    Scenario *scene;
 
     list<double>mapX;
     list<double>mapY;
@@ -60,7 +60,6 @@ private:
     ArArgumentParser parser;
     //vector<ArSensorReading> *lasers = NULL;
     //int sonars[8] = {0,0,0,0,0,0,0,0};
-    vector<ArSensorReading> *lasers;
     QThread *thread;
     QTimer *timer;
 

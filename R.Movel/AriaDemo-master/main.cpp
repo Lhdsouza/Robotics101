@@ -1,6 +1,5 @@
 #include <QApplication>
 #include "mainwindow.h"
-#include "tabuleiro.h"
 #include "scenario.h"
 
 int main(int argc, char *argv[])

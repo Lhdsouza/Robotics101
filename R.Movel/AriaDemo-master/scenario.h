@@ -7,10 +7,10 @@
 #include <QColor>
 #include <QPixmap>
 
-#include "robot.h"
-
 #include <iostream>
 #include <math.h>
+
+#include "robot.h"
 
 using namespace std;
 
@@ -22,26 +22,29 @@ class scenario;
 #define TILE_OBSTACLE 1
 #define TILE_ROBOT 2
 
-class scenario : public QWidget
+class Robot;
+
+class Scenario : public QWidget
 {
     Q_OBJECT
 public:
-    explicit scenario(QWidget *parent = 0, unsigned int gridSize = 1);
-    ~scenario();
+    explicit Scenario(QWidget *parent = 0, unsigned int gridSize = 1);
+    ~Scenario();
 
 public slots:
     void setBlock(int x, int y, int type);
-    void updateDesenho(Robot* robot);
+    virtual void updateDesenho(Robot *robot) = 0;
 
 private:
     Ui::scenario *ui;
     int **board;
+
+protected:
     unsigned int gridSize;
     unsigned int tileSize;
 
-protected:
     void paintEvent(QPaintEvent *event);
-
+    virtual void customTilePaint(int x, int y, int type, QPainter *p) = 0;
 };
 
 #endif // SCENARIO_H

@@ -5,8 +5,9 @@
 #include <aboutdialog.h>
 #include <robot.h>
 #include <QTimer>
-#include "tabuleiro.h"
 #include "scenario.h"
+#include "bayesmap.h"
+#include "himmmap.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,8 +41,7 @@ private:
     AboutDialog aboutDialog;
     Robot *mRobot;
     QTimer mTimer;
-    tabuleiro board;
-    scenario *environment;
+    Scenario *environment;
 };
 
 #endif // MAINWINDOW_H

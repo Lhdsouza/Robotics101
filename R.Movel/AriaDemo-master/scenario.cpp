@@ -4,7 +4,7 @@
 #include <QtGui>
 
 
-scenario::scenario(QWidget *parent, unsigned int gridSize) :
+Scenario::Scenario(QWidget *parent, unsigned int gridSize) :
     QWidget(parent),
     ui(new Ui::scenario),
     gridSize(gridSize)
@@ -26,7 +26,7 @@ scenario::scenario(QWidget *parent, unsigned int gridSize) :
     tileSize = 10;
 }
 
-void scenario::paintEvent(QPaintEvent *){
+void Scenario::paintEvent(QPaintEvent *){
     QPainter painter(this);
 
     for(unsigned int xI = 0; xI < gridSize; xI++) {
@@ -49,71 +49,20 @@ void scenario::paintEvent(QPaintEvent *){
             QRect rect(tileSize*xI, tileSize*yI, tileSize, tileSize);
             painter.drawRect(rect);
 
+            // Do custom modifications.
+            customTilePaint(xI, yI, board[xI][yI], &painter);
+
         }
     }
 }
 
 
-void scenario::setBlock(int x, int y, int type){
+void Scenario::setBlock(int x, int y, int type){
     this->board[x][y] = type;
 }
 
 
-void scenario::updateDesenho(Robot *robot) {
-    double theta = robot->getNorth(), robotX = robot->getX(), robotY = robot->getY();
-    int n = 22000/gridSize;
-    int xSonar[8];
-    int ySonar[8];
-
-    int meXGlobal = (gridSize/2) + (robotX /n); //Coordenadas de tabuleiro!
-    int meYGlobal = (gridSize/2) - (robotY /n);
-    setBlock(meXGlobal, meYGlobal, TILE_ROBOT);
-
-    for (int i = 0; i < 8; i++) {
-        xSonar[i]=0;
-        ySonar[i]=0;
-    }
-
-    for (int i = 0; i < 8; i++) {
-
-        int angulo = theta;
-
-        if(i==0){angulo = 90;}
-        if(i==1){angulo = 50;}
-        if(i==2){angulo = 30;}
-        if(i==3){angulo = 10;}
-        if(i==4){angulo = -10;}
-        if(i==5){angulo = -30;}
-        if(i==6){angulo = -50;}
-        if(i==7){angulo = -90;}
-        cout << "Angulo: " << angulo <<"\t Range: " << robot->sonars[i]  << endl;
-        if( robot->sonars[i] < 5000){
-
-            // H² = A² + B²
-            double Hp =  robot->sonars[i]; //H
-            double Co = sin((M_PI*(angulo+theta))/180.0)*Hp; // A - representa a variacao em Y
-            double Ca = cos((M_PI*(angulo+theta))/180.0)*Hp; //B - representa a variacao em X
-
-
-            int Xn = meXGlobal + Ca/n ;
-            int Yn = meYGlobal - Co/n;
-
-            xSonar[i] =Xn;
-            ySonar[i] =Yn;
-
-
-
-            if( (Yn >= 0) && (Xn >= 0) && (Xn < gridSize) && (Yn < gridSize) ) {
-                setBlock(Xn, Yn, TILE_OBSTACLE);
-            } else {
-                cout << "OMG " << Xn << " " << Yn << endl;
-            }
-       }
-    }
-    this->repaint();
-}
-
-scenario::~scenario()
+Scenario::~Scenario()
 {
     delete ui;
     for(int i; i < gridSize; i++)

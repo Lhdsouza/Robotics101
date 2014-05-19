@@ -2,7 +2,6 @@
 #include <list>
 #include <iostream>
 #include <math.h>
-#include "tabuleiro.h"
 
 using::std::cout;
 using::std::endl;
@@ -10,14 +9,13 @@ using::std::endl;
 
 
 
-Robot::Robot(int *argc, char **argv, scenario *scene):
+Robot::Robot(int *argc, char **argv, Scenario *scene):
     QObject(),
     ArRobot(),
     parser(argc,argv),
     scene(scene)
 {
     robotConnector = new ArRobotConnector(&parser,this);
-    laserConnector = new ArLaserConnector(&parser,this,robotConnector);
 
     thread = new QThread();
     this->moveToThread(thread);
@@ -41,14 +39,12 @@ void Robot::start()
 bool Robot::initializeAria()
 {
     Aria::init();
-    //board.GenerateButtons();
-    //this->board.GenerateButtons();
+    //parser.addDefaultArgument("-rp /dev/ttyUSB0 -laserPortType serial -lp /dev/ttyUSB1 ");
+    //parser.addDefaultArgument("-rh 192.168.1.11 -remoteLaserTcpPort 10002");
+
+    parser.addDefaultArgument("-rh 127.0.0.1 -remoteLaserTcpPort 10002");
 
 
-    //parser->addDefaultArgument("-rh 192.168.1.11 -remoteLaserTcpPort 10002");
-    parser.addDefaultArgument("-rh 127.0.0.1:8101");
-
-    this->addRangeDevice(&sick);
     if(!robotConnector->connectRobot())
     {
         ArLog::log(ArLog::Terse,"Ops... falha ao conectar ao servidor do robo.");
@@ -59,6 +55,8 @@ bool Robot::initializeAria()
     cout << "AQUI!!!" << endl;
 
     ArLog::log(ArLog::Normal,"Robot connected");
+    this->addRangeDevice(&sick);
+    laserConnector = new ArLaserConnector(&parser,this,robotConnector);
     laserConnector->setupLaser(&sick);
 
     if(!laserConnector->connectLaser(&sick))

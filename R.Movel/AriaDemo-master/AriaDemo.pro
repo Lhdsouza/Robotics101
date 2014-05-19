@@ -16,14 +16,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     robot.cpp \
     aboutdialog.cpp \
-    tabuleiro.cpp \
-    scenario.cpp
+    scenario.cpp \
+    bayesmap.cpp \
+    himmmap.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
     aboutdialog.h \
-    tabuleiro.h \
-    scenario.h
+    scenario.h \
+    bayesmap.h \
+    himmmap.h
 
 FORMS    += mainwindow.ui \
     aboutdialog.ui \

@@ -32,7 +32,11 @@ void Scenario::paintEvent(QPaintEvent *){
     for(unsigned int xI = 0; xI < gridSize; xI++) {
         for(unsigned int yI = 0; yI < gridSize; yI++) {
 
+            // Do custom modifications.
+            customTilePaint(xI, yI, board[xI][yI], &painter);
+
             // Choose brush according to type.
+            painter.setOpacity(1.0);
             switch(board[xI][yI]) {
                 case TILE_OBSTACLE:
                     painter.setBrush(Qt::black);
@@ -49,8 +53,6 @@ void Scenario::paintEvent(QPaintEvent *){
             QRect rect(tileSize*xI, tileSize*yI, tileSize, tileSize);
             painter.drawRect(rect);
 
-            // Do custom modifications.
-            customTilePaint(xI, yI, board[xI][yI], &painter);
 
         }
     }

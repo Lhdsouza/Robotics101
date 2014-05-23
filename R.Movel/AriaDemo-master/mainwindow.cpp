@@ -9,8 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //environment = new BayesMap(0,101,0.98);
-    environment = new HimmMap(0,51,0,9,3,1);
+    environment = new BayesMap(0,101,0.98);
+    //environment = new HimmMap(0,101,0,9,3,1);
 
     //Just to simulate the command line input
     int argc = 0;

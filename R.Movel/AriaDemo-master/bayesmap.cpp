@@ -29,9 +29,7 @@ void BayesMap::updateDesenho(Robot *robot)
     double theta = robot->getNorth(), robotX = robot->getX(), robotY = robot->getY();
     int meXGlobal = (gridSize/2) + (robotX /n);
     int meYGlobal = (gridSize/2) - (robotY /n);
-    setBlock(meXGlobal, meYGlobal, TILE_ROBOT);
 
-    // Simulador :  i[0]=+90 e i[7]=-90
     for (int i = 0; i < 8; i++) {
         int angulo = theta;
         if(i==0){angulo = 90;}
@@ -42,52 +40,93 @@ void BayesMap::updateDesenho(Robot *robot)
         if(i==5){angulo = -30;}
         if(i==6){angulo = -50;}
         if(i==7){angulo = -90;}
+        double gap = n*1;
         if( robot->sonars[i] < 4000){
             double Hp =  robot->sonars[i]; //H
             int anguloV=30;
             cout<<"Id:"<< i <<" :-----------------------------------------"<<endl;
 
             for( double thet01=-(anguloV/2); thet01<=(anguloV/2);thet01++){
-                for(double d=0;d<Hp;d+=fixedAdvance){
+
+
+                //Regiao I
+                for(double d=Hp-gap;d<Hp+gap;d+=fixedAdvance){
                     // H² = A² + B²
                     double nAngulo = angulo +thet01+ robot->getTh();// Angulo do Laser+ Variação de theta + Angulação do Robo
                     double Co = sin((M_PI*nAngulo)/180.0)*d; // A - representa a variacao em Y
                     double Ca = cos((M_PI*nAngulo)/180.0)*d; //B - representa a variacao em X
                     int Xn = meXGlobal + Ca/n ;
                     int Yn = meYGlobal - Co/n;
+
                     if( (Yn >= 0) && (Xn >= 0) && (Xn < gridSize) && (Yn < gridSize) ) {
                         double isblock = 0;
                         if(thet01 < 0){
+                            thet01 = -thet01;
                             // raio -15º à 0º
-                            isblock = bayes[Xn][Yn] * ((1-((Hp-d)/Hp))+(((anguloV/2)+thet01)/(anguloV/2)))*0.98;
-                        }else{
-                            // raio 0º à 15º
-                            isblock = bayes[Xn][Yn] * ((1-((Hp-d)/Hp))+(((anguloV/2)-thet01)/(anguloV/2)))*0.98;
                         }
 
-                        // Update bayes.
-                        this->bayes[Xn][Yn]= (isblock * this->bayes[Xn][Yn]) /
-                                ( (isblock * this->bayes[Xn][Yn]) + ( (1-isblock) * (1- this->bayes[Xn][Yn])));
+                        isblock = 0.5*((((Hp-d)/Hp))+(((anguloV/2)+thet01)/(anguloV/2)));
 
-                        // Set block.
-                        if(this->bayes[Xn][Yn] > occupationThreshold){
+                        this->bayes[Xn][Yn]= (isblock * this->bayes[Xn][Yn]) / ( (isblock * this->bayes[Xn][Yn]) + ( (1-isblock) * (1- this->bayes[Xn][Yn])));
+
+                        //cout << "X:" << Xn << " Y:" << Yn << "FullProbability=" << isblock << endl;
+                        if(this->bayes[Xn][Yn] > 0.95){
                             setBlock(Xn, Yn, TILE_OBSTACLE);
                         } else {
                             setBlock(Xn, Yn, TILE_FREE);
                         }
+
+
+                    }
+                }
+
+                //Regiao II
+                for(double d=0;d<Hp-gap;d+=fixedAdvance){
+                    // H² = A² + B²
+                    double nAngulo = angulo +thet01+ robot->getTh();// Angulo do Laser+ Variação de theta + Angulação do Robo
+                    double Co = sin((M_PI*nAngulo)/180.0)*d; // A - representa a variacao em Y
+                    double Ca = cos((M_PI*nAngulo)/180.0)*d; //B - representa a variacao em X
+                    int Xn = meXGlobal + Ca/n ;
+                    int Yn = meYGlobal - Co/n;
+
+                    if( (Yn >= 0) && (Xn >= 0) && (Xn < gridSize) && (Yn < gridSize) ) {
+                        double isblock = 0;
+                        if(thet01 < 0){
+                            thet01 = -thet01;
+                        }
+
+                        isblock = 1. - 0.5*((((Hp-d)/Hp))+(((anguloV/2)+thet01)/(anguloV/2)));
+
+
+                        //cout << "Atualizando " << Xn << " " << Yn << " " << thet01 << endl
+                        this->bayes[Xn][Yn]= (isblock * this->bayes[Xn][Yn]) / ( (isblock * this->bayes[Xn][Yn]) + ( (1-isblock) * (1- this->bayes[Xn][Yn])));
+
+                        //cout << "X:" << Xn << " Y:" << Yn << "FullProbability=" << isblock << endl;
+                        if(this->bayes[Xn][Yn] > 0.95){
+                            setBlock(Xn, Yn, TILE_OBSTACLE);
+                        } else {
+                            setBlock(Xn, Yn, TILE_FREE);
+                        }
+
 
                     }
                 }
             }
         }
     }
+
+    setBlock(meXGlobal, meYGlobal, TILE_ROBOT);
     this->repaint();
 }
 
 
 void BayesMap::customTilePaint(int x, int y, int type, QPainter *p)
 {
-    p->setPen(Qt::green);
-    p->setFont(QFont("Comic Sans MS", 6, QFont::Bold));
-    p->drawText(tileSize*(x+0.5), tileSize*(y+1),QString::number(bayes[x][y]));
+    //    p->setPen(Qt::green);
+    //    p->setFont(QFont("Comic Sans MS", 6, QFont::Bold));
+    //    p->drawText(tileSize*(x+0.5), tileSize*(y+1),QString::number(bayes[x][y]));
+    p->setPen(Qt::gray);
+    p->setOpacity(bayes[x][y]);
+    QRect rect(tileSize*x, tileSize*y, tileSize, tileSize);
+    p->drawRect(rect);
 }
